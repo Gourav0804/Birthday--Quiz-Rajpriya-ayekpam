@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Birthday Quiz 💝</title>
+
+<!-- Google Font -->
+<link href="[fonts.googleapis.com](https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@400;600&display=swap)" rel="stylesheet">
+
+<style>
+/* 🌸 RESET + BASE STYLE */
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  font-family:'Poppins',sans-serif;
+  background:linear-gradient(135deg,#ffd6e8,#ffe7d3);
+  overflow:hidden;
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:background 1s ease;
+}
+.hidden{display:none;}
+
+.fade-in{
+  animation:fadeIn 1s forwards;
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+/* 🌷 LOADER */
+#loader{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#ffe1ea,#fff4e0);
+  z-index:1000;flex-direction:column;
+}
+.heart{
+  width:40px;height:40px;
+  background:#ff82a9;
+  position:relative;
+  transform:rotate(-45deg);
+  animation:beat 1s infinite;
+}
+.heart::before,.heart::after{
+  content:"";
+  width:40px;height:40px;
+  background:#ff82a9;
+  border-radius:50%;
+  position:absolute;
+}
+.heart::before{top:-20px;left:0;}
+.heart::after{left:20px;top:0;}
+@keyframes beat{
+  0%,100%{transform:rotate(-45deg) scale(1);}
+  50%{transform:rotate(-45deg) scale(1.3);}
+}
+
+/* 🌼 CONTAINER */
+.container{
+  text-align:center;
+  padding:20px;
+  max-width:500px;
+  animation:fadeIn 1s ease;
+}
+
+/* 💕 QUESTIONS */
+h1{
+  font-family:'Great Vibes',cursive;
+  font-size:2.2em;
+  color:#ff5e9c;
+  margin-bottom:1.5em;
+}
+
+button{
+  background:rgba(255,255,255,0.7);
+  border:none;
+  padding:12px 25px;
+  border-radius:25px;
+  font-size:1em;
+  cursor:pointer;
+  margin:10px;
+  box-shadow:0 4px 15px rgba(0,0,0,0.1);
+  transition:all .3s ease;
+  backdrop-filter:blur(5px);
+}
+button:hover{
+  background:#ff9ecf;
+  color:#fff;
+  box-shadow:0 4px 20px rgba(255,100,150,0.4);
+  transform:scale(1.1);
+}
+.moving{
+  position:absolute;
+}
+
+/* ✨ FINAL MESSAGE */
+.final-message{
+  font-family:'Great Vibes',cursive;
+  font-size:2.5em;
+  color:#ff1e74;
+  text-shadow:0 0 10px #fff,0 0 20px #ff99c2;
+  animation:glow 2s ease-in-out infinite alternate;
+}
+@keyframes glow{
+  from{text-shadow:0 0 10px #fff,0 0 20px #ff99c2;}
+  to{text-shadow:0 0 20px #fff,0 0 40px #ff337b;}
+}
+
+/* ❤️  FLOATING HEARTS */
+.heart-bg{
+  position:fixed;
+  top:0;left:0;width:100%;height:100%;
+  overflow:hidden;
+  z-index:-1;
+}
+.heart-bg span{
+  position:absolute;
+  display:block;
+  color:#ff7eb9;
+  animation:float 10s linear infinite;
+  opacity:0.6;
+}
+@keyframes float{
+  0%{transform:translateY(0) scale(1);}
+  100%{transform:translateY(-100vh) scale(1.5);}
+}
+
+/* 🎈 TYPEWRITER */
+@keyframes type{
+  from{width:0;}
+  to{width:100%;}
+}
+.typewriter{
+  display:inline-block;
+  overflow:hidden;
+  white-space:nowrap;
+  border-right:3px solid #ff1e74;
+  animation:type 3s steps(30,end) forwards,blink .75s step-end infinite;
+}
+@keyframes blink{50%{border-color:transparent;}}
+</style>
+</head>
+<body>
+
+<!-- 🌸 LOADING SCREEN -->
+<div id="loader">
+  <div class="heart"></div>
+  <p style="color:#ff6b9d;margin-top:20px;font-weight:600;">Loading love...</p>
+</div>
+
+<!-- ❤️ FLOATING HEARTS BG -->
+<div class="heart-bg" id="hearts"></div>
+
+<!-- 💞 MAIN CONTENT -->
+<div class="container hidden" id="quiz">
+  <div id="q1" class="question fade-in">
+    <h1>Do you want to be the happiest girl?</h1>
+    <button onclick="nextQuestion(2)">Yes 💖</button>
+    <button id="no1" class="moving">No 😜</button>
+  </div>
+
+  <div id="q2" class="question hidden">
+    <h1>I don't know if this is the right time, but...<br><br>would you ever give me a chance to make you the happiest girl in the world?</h1>
+    <button onclick="finalScreen()">Yes 🥰</button>
+    <button id="no2" class="moving">No 🙈</button>
+  </div>
+
+  <div id="final" class="question hidden">
+    <h1 class="typewriter" id="typed"></h1>
+    <h1 class="final-message hidden" id="finalMsg">Happy Birthday 🎂 ❤️</h1>
+    <canvas id="confetti"></canvas>
+  </div>
+</div>
+
+<!-- 💫 SOUNDS -->
+<audio id="bgm" loop autoplay volume="0.2" src="[cdn.pixabay.com](https://cdn.pixabay.com/download/audio/2022/03/15/audio_e3cfb6d6c1.mp3?filename=romantic.mp3)"></audio>
+<audio id="clickSound" src="[cdn.pixabay.com](https://cdn.pixabay.com/download/audio/2022/03/15/audio_7eb8d48939.mp3?filename=click.mp3)"></audio>
+
+<script>
+/* 🌹 INITIAL LOADING ANIMATION */
+window.onload = ()=>{
+  setTimeout(()=>{
+    document.getElementById('loader').style.display='none';
+    document.getElementById('quiz').classList.remove('hidden');
+  },1500);
+};
+
+/* 💘 MOVING 'NO' BUTTONS */
+function makeButtonRun(btn){
+  btn.addEventListener('mouseover',()=>{
+    const x = Math.random()*(window.innerWidth-btn.offsetWidth);
+    const y = Math.random()*(window.innerHeight-btn.offsetHeight);
+    btn.style.left=x+'px';
+    btn.style.top=y+'px';
+  });
+}
+makeButtonRun(document.getElementById('no1'));
+makeButtonRun(document.getElementById('no2'));
+
+/* 💞 QUESTION TRANSITIONS */
+const clickSound=document.getElementById('clickSound');
+function nextQuestion(num){
+  clickSound.play();
+  document.getElementById('q1').classList.add('hidden');
+  document.getElementById('q2').classList.remove('hidden');
+}
+function finalScreen(){
+  clickSound.play();
+  document.body.style.background="linear-gradient(135deg,#ffd6e8,#fff0f5)";
+  document.getElementById('q2').classList.add('hidden');
+  document.getElementById('final').classList.remove('hidden');
+  typeWriter();
+  startConfetti();
+}
+
+/* 🎀 TYPEWRITER EFFECT */
+function typeWriter(){
+  const text="Just one thing left to say...";
+  const typed=document.getElementById('typed');
+  let i=0;
+  const speed=100;
+  function type(){
+    if(i<text.length){
+      typed.textContent+=text.charAt(i);
+      i++;
+      setTimeout(type,speed);
+    } else {
+      setTimeout(()=>{
+        typed.classList.remove('typewriter');
+        document.getElementById('finalMsg').classList.remove('hidden');
+      },800);
+    }
+  }
+  type();
+}
+
+/* 💝 FLOATING HEARTS CREATION */
+const heartContainer=document.getElementById('hearts');
+for(let i=0;i<20;i++){
+  const span=document.createElement('span');
+  span.innerHTML='❤';
+  span.style.left=Math.random()*100+'%';
+  span.style.fontSize= (Math.random()*20+10)+'px';
+  span.style.animationDuration= (Math.random()*5+5)+'s';
+  span.style.animationDelay=(Math.random()*5)+'s';
+  heartContainer.appendChild(span);
+}
+
+/* 🎉 CONFETTI */
+function startConfetti(){
+  const canvas=document.getElementById('confetti');
+  const ctx=canvas.getContext('2d');
+  canvas.width=window.innerWidth;
+  canvas.height=window.innerHeight;
+  let pieces=[];
+  const colors=['#ff7eb9','#ffb3ba','#ffdfba','#ffffba','#baffc9','#bae1ff'];
+
+  for(let i=0;i<150;i++){
+    pieces.push({
+      x:Math.random()*canvas.width,
+      y:Math.random()*canvas.height-canvas.height,
+      w:10,h:10,
+      color:colors[Math.floor(Math.random()*colors.length)],
+      speed:(Math.random()*3)+2
+    });
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    for(let i=0;i<pieces.length;i++){
+      const p=pieces[i];
+      ctx.fillStyle=p.color;
+      ctx.fillRect(p.x,p.y,p.w,p.h);
+      p.y+=p.speed;
+      if(p.y>canvas.height)p.y= -10;
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+/* 🎶 OPTIONAL: LOW BACKGROUND MUSIC START */
+document.getElementById('bgm').volume=0.2;
+</script>
+</body>
+</html>
